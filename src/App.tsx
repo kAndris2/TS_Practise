@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -17,6 +17,12 @@ interface IState {
   }
 }
 
+function getMovieIdFomUrl(): number {
+    let path = window.location.href;
+    let id = String(path).split("/")[4];
+    return parseInt(id);
+}
+
 function App() {
 
   const [api, setApi] = useState<IState["api"]>(
@@ -26,10 +32,17 @@ function App() {
     }
   )
 
-  const [movieId, setMovieId] = useState<number>()
+  /*
+  const [movieId, setMovieId] = useState<number>(0)
 
   const handleMovieIdChange = (id: number): void => {
     setMovieId(id)
+    console.log(`id: ${id}`)
+  }
+  */
+
+  function handleBackClick() {
+    window.location.replace("/")
   }
 
   return (
@@ -39,13 +52,14 @@ function App() {
         <Switch>
 
           <Route exact path="/">
-            <PopularMovies handleMovieIdChange={handleMovieIdChange}
-                            api={api}         
-            />
+            <PopularMovies api={api} />
           </Route>
 
-          <Route exact path={"/movie/:id"}>
-          
+          <Route exact path={`/movie/:id`}>
+            <MovieDetails api={api} 
+                          movieId={getMovieIdFomUrl()} 
+                          handleBackClick={handleBackClick}
+            />
           </Route>
 
         </Switch>

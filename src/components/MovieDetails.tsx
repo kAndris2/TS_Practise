@@ -6,34 +6,67 @@ interface Props {
         url: string;
     }
     movieId: number;
+    handleBackClick: () => void
 }
 
 interface Movie {
+    id: number;
     title: string;
     poster_path: string;
-
+    overview: string;
+    homepage: string;
+    tagline: string;
 }
 
-const MovieDetails: React.FC<Props> = ({ api, movieId }) => {
-    const [movie, setMovie] = useState<Movie>()
+interface IState {
+    key: number
+}
+
+const MovieDetails: React.FC<Props> = ({ api, movieId, handleBackClick }) => {
+    const [mId, setMId]= useState<number>(movieId);
+    const [movie, setMovie] = useState<Movie>({
+        id: 0,
+        title: "",
+        poster_path: "",
+        overview: "",
+        homepage: "",
+        tagline: ""
+    })
     const [isLoading, setLoading] = useState<boolean>(true)
 
-    useEffect(() => {
-        function getMovie() {
-            fetch(`${api.url}/movie/${movieId}?api_key=${api.key}&language=en-US&page=1`)
-              .then(response => response.json())
-              .then(response => {
-                setLoading(false)
-                setMovie(response.results)
-              })
+    async function test() {
+        async function getMovie() {
+            const response = await fetch(`${api.url}/movie/${mId}?api_key=${api.key}&language=en-US&page=1`)
+            const jsonResponse = await response.json()
+            setMovie(jsonResponse)
+            setLoading(false)
         }
-        getMovie()
-    }, [])
+
+        await getMovie()
+    }
+
+    useEffect(() => {
+        test()
+        setMId(movieId)
+    }, [movieId])
+
+    function handleClick() {
+        handleBackClick()
+    }
 
     if(!isLoading) {
         return (
             <div>
-                <h1>Movie</h1>
+                <a href={`${movie.homepage}`}>
+                    <h1>{movie.title} ({movie.id})</h1>
+                </a>
+                <h4>{movie.tagline}</h4>
+                <img alt={movie.title} 
+                            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${movie.poster_path}`} 
+                />
+                <p>{movie.overview}</p>
+
+                <button onClick={handleClick}>{"<--Back"}</button>
             </div>
         )
     }

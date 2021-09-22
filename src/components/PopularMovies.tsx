@@ -1,11 +1,11 @@
-import React, {FC, useState, useEffect, MouseEvent} from 'react';
+import React, {FC, useState, useEffect, MouseEvent, MouseEventHandler} from 'react';
 
 interface Props {
     api: {
         key: string;
         url: string;
     }
-    handleMovieIdChange(id: number): void
+    //handleMovieIdChange: (id: number) => void
 }
 
 interface Movie {
@@ -14,7 +14,7 @@ interface Movie {
     poster_path: string;
 }
 
-const PopularMovies: React.FC<Props> = ({api, handleMovieIdChange}) => {
+const PopularMovies: React.FC<Props> = ({api}) => {
     const [isLoading, setLoading] = useState<boolean>(true)
     const [movies, setMovies] = useState<Movie[]>()
 
@@ -39,17 +39,21 @@ const PopularMovies: React.FC<Props> = ({api, handleMovieIdChange}) => {
         getPopularMovies()
     }, [])
 
-    function handleClick(event: MouseEvent) {
-        alert(event.target.value)
+    /*
+    function handleClick(id: number): undefined {
+        console.log(); 
+        handleMovieIdChange(id);
+        return undefined
     }
+    */
 
     if(!isLoading) {
         return (
             <div>
                 {movies?.map((movie: Movie) =>
-                    <a href={"/movie/" + movie.id} onClick={handleClick}>
+                    <a href={`/movie/${movie.id}`} >
                         <img alt={movie.title} 
-                            src={"https://image.tmdb.org/t/p/w220_and_h330_face/" + movie.poster_path} 
+                            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${movie.poster_path}`} 
                         />
                     </a>
                 )}
